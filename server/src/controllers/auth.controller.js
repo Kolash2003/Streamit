@@ -14,6 +14,19 @@ export const loginController = async (req, res) => {
             });
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+        }
+
+        if(password.length < 6) {
+            return res.status(status.FORBIDDEN).json({
+                success: false,
+                message: "Passwor must be atleast 6 characters",
+            });
+        }
+
         let user = User.findOne({email}).select("+password");
 
         if(!user) {
@@ -55,6 +68,19 @@ export const signupController = async (req, res) => {
             success: false,
             message: "Fill all the details for Signup",
         })
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+    }
+    
+    if(password.length < 6) {
+        return res.status(status.FORBIDDEN).json({
+            success: false,
+            message: "Passwor must be atleast 6 characters",
+        });
     }
 
     let user = User.findOne({email});
