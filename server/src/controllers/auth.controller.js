@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user.model.js';
-import status from "http-status-codes";
-
+import status, { StatusCodes } from "http-status-codes";
+import { sendCookie } from '../utils/features.js';
 
 export const loginController = async (req, res) => {
     try {
@@ -94,5 +94,13 @@ export const signupController = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    user = await User.create({
+        name,
+        username,
+        email,
+        password: hashedPassword,
+    });
+
+    sendCookie(user, res, `Registered Sucessfully`, StatusCodes.ACCEPTED);
     
 }

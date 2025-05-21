@@ -12,27 +12,48 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+        unique: true,
     },
     password: {
         type: String,
         required: true,
         select: false,
+        minlength: 6,
     },
-    followers: [
+    friends: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },
     ],
-    following: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-    ],
+    bio: {
+        type: String,
+        default: "",
+    },
+    profilePic: {
+        type: String,
+        default: "",
+    },
+    nativeLanguage: {
+        type: String,
+        default: "",
+    },
+    learningLanguage: {
+        type: String,
+        default: "",
+    },
+    location: {
+        type: String,
+        default: "",
+    },
+    isOnboarding: {
+        type: Boolean,
+        default: false,
+    },
 },
 {timestamps: true}
 );
 
 const User = mongoose.model("User", UserSchema);
+
 export default User;
