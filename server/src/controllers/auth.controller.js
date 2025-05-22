@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import User from '../models/user.model.js';
 import status, { StatusCodes } from "http-status-codes";
 import { sendCookie } from '../utils/features.js';
+import { upsertStreamUser } from '../lib/stream.js';
 
 export const loginController = async (req, res) => {
     try {
@@ -31,7 +32,7 @@ export const loginController = async (req, res) => {
         if (!user) {
             return res.status(status.NOT_FOUND).json({
                 success: false,
-                message: "User not found",
+                message: "Invalid User or password",
             });
         }
 
@@ -40,7 +41,7 @@ export const loginController = async (req, res) => {
         if (!isMatch) {
             return res.status(status.UNAUTHORIZED).json({
                 success: false,
-                message: "Incorrect email or password",
+                message: "Invalid email or password",
             });
         }
 
@@ -97,6 +98,9 @@ export const signupController = async (req, res) => {
             });
         }
 
+        const index = Math.floor(Math.random() * 100) + 1; // generate number between 1 and 100
+        const randomAvatar = `https://avatar.iran.liara.run/public/${index}.png`
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         user = await User.create({
@@ -104,9 +108,22 @@ export const signupController = async (req, res) => {
             username,
             email,
             password: hashedPassword,
+            profilePic: randomAvatar,
         });
 
+        try {
+            await upsertStreamUser({
+                id: user._id.toString(),
+                name: user.name,
+                image: user.profilePic || "",
+            });
+            console.log(`Stream user created for ${user.name}`);
+        } catch (error) {
+            console.log("Error creating stream user:", error);
+        }
+ 
         sendCookie(user, res, `Registered successfully`, StatusCodes.ACCEPTED);
+    
     } catch (error) {
         console.error(error);
         return res.status(status.INTERNAL_SERVER_ERROR).json({

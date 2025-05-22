@@ -7,6 +7,7 @@ import authRoutes from './src/routes/auth.route.js'; // Assuming you have this
 
 const app = express();
 
+app.use(express.json());
 app.use("/api/auth", authRoutes);
 
 app.listen(process.env.PORT, () => {
