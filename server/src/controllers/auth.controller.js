@@ -132,3 +132,65 @@ export const signupController = async (req, res) => {
         });
     }
 };
+
+export const onBoard = async (req, res) => {
+   try {
+        const userId = req.user._id;
+
+        const {name, bio, nativeLanguage, learningLanguage, location} = req.body;
+
+        if(!name || !bio || !nativeLanguage  || !learningLanguage || !location) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
+                message: "All fields are required",
+                missingFields: [
+                    !name && "Fullname",
+                    !bio && "bio",
+                    !nativeLanguage && "nativeLanguage",
+                    !learningLanguage && "learningLanguage",
+                    !location && "location",
+                ].filter(Boolean),
+            });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(userId, {
+            name,
+            bio,
+            location,
+            nativeLanguage,
+            learningLanguage,
+            isOnboarding : true,
+        }, {new: true})
+
+        if(!updatedUser) return res.status(StatusCodes.NOT_FOUND).json({
+            success: false,
+            message: "User not found"
+        })
+
+        try {
+            await upsertStreamUser({
+                id: updatedUser._id.toString(),
+                name: updatedUser.name,
+                image: updatedUser.profilePic || "",
+             
+            });
+            
+            console.log("Stream user updated after onboarding");
+        } catch (streamError) {
+            console.log(`Error updating Stream user during onboarding:`, streamError.message);
+        }
+
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            message: "updated user data"
+        });
+
+
+   } catch (error) {
+        console.error("Onboarding error: ", error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: "INternal server Error"
+        });
+   }
+}

@@ -15,10 +15,26 @@ export const isAuthenticated = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        req.user = await User.findById(decoded._id);
+        if(!decoded) {
+            return res.status(StatusCodes.UNAUTHORIZED).json({
+                success: false,
+                message: "Token not valid"
+            })
+        }
+
+        const user = await User.findById(decoded._id);
+        
+        if(!user) {
+            return res.status(StatusCodes.UNAUTHORIZED).json({
+                success: false,
+                message: "Unauthorized - User not found"
+            })
+        }
+
+        req.user = user;
         next();
 
     } catch (error) {
-        console.log(error);
+        console.log("Error in isAuth middleware", error);
     }
 }
