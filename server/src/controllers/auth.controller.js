@@ -194,3 +194,10 @@ export const onBoard = async (req, res) => {
         });
    }
 }
+
+export const getProfile = async (req, res) => {
+    res.StatusCodes(200).json({
+        success: true,
+        user: req.user
+    });
+}

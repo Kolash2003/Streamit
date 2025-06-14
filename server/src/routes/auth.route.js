@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginController, logoutController, onBoard, signupController } from '../controllers/auth.controller.js';
+import { getProfile, loginController, logoutController, onBoard, signupController } from '../controllers/auth.controller.js';
 import { isAuthenticated } from '../utils/isauthenticated.js';
 
 
@@ -10,6 +10,7 @@ router.post('/logout', logoutController);
 router.post('/signup', signupController);
 
 router.post("/onboarding", isAuthenticated, onBoard);
+router.get("/me", isAuthenticated, getProfile);
 
 
 export default router;
