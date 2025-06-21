@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
+import SignUpPage from './pages/SignupPage';
 import OnboardingPage from './pages/OnboardingPage';
 import NotificationsPage from './pages/NotificationsPage';
 import CallPage from './pages/CallPage';
