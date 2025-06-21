@@ -33,7 +33,7 @@ const FriendCard = ({ friend }) => {
   };
   export default FriendCard;
   
-  export function getLanguageFlag(language) {
+export function getLanguageFlag(language) {
     if (!language) return null;
   
     const langLower = language.toLowerCase();
